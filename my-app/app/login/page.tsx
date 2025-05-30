@@ -58,6 +58,7 @@ const page = () => {
               placeholder="Mobile"
               inputProps={{
                 type: "tel",
+                maxLength: 10,
                 ...register("mobile", { required: true }),
               }}
               className={styles.input}

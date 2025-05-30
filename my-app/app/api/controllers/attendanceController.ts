@@ -114,5 +114,7 @@ export async function summary({ userId }: IUserContext) {
     return sum;
   }, 0);
 
-  return { status: 200, body: { totalHours } };
+  if (records.length === 0) return { status: 200, body: { totalHours: 0 } };
+
+  return { status: 200, body: { totalHours: totalHours.toFixed(1) } };
 }

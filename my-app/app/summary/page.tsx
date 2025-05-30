@@ -1,35 +1,34 @@
 "use client";
-
 import { attendenceAction } from "@/src/actions";
 import AppSkeleton from "@/src/component/appskeleton/AppSkeleton";
+import Loader from "@/src/component/loader/Loader";
 import MonthlySummarySkeleton from "@/src/component/MonthlySkeleton";
 import { calculateProgressPercent } from "@/src/helpers/general.helper";
 import { withAuth } from "@/src/hoc/withAuthentication";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
-interface PageProps {
-  month?: string;
-}
-
-const Page: React.FC<PageProps> = ({ month = "This Month" }) => {
-  const [totalHours, setTotalHours] = useState<number>(0);
-  const [progress, setProgress] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const page = () => {
+  const [totalHours, setTotalHours] = React.useState<number>(0);
+  const [progress, setProgress] = React.useState<number>(0);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   useEffect(() => {
     const monthData = async () => {
       setIsLoading(true);
       const res = await attendenceAction.fetchMonthlySummary();
       if (res.success) {
-        const hours = Number(res.data.totalHours) || 0;
-        setTotalHours(hours);
-        setProgress(calculateProgressPercent(hours.toString(), 200));
+        setTotalHours(res.data.totalHours);
       }
       setIsLoading(false);
     };
     monthData();
   }, []);
 
+  const progressPercent = calculateProgressPercent(totalHours, 200);
+  useEffect(() => {
+    setProgress(progressPercent);
+  }, [progressPercent]);
+  console.log(progressPercent, "progressPercent");
   return (
     <AppSkeleton>
       {isLoading ? (
@@ -39,7 +38,12 @@ const Page: React.FC<PageProps> = ({ month = "This Month" }) => {
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-gradient-to-tr from-[#6b3eb4] to-[#9d6bf0] p-3 rounded-full"></div>
             <div>
-              <p className="text-gray-500 text-sm">{month}</p>
+              <p className="text-gray-500 text-sm">
+                {new Date().toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
               <h2 className="text-lg font-semibold text-gray-800">
                 Monthly Summary
               </h2>
@@ -63,4 +67,4 @@ const Page: React.FC<PageProps> = ({ month = "This Month" }) => {
   );
 };
 
-export default withAuth(Page);
+export default withAuth(page);

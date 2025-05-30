@@ -41,23 +41,19 @@ export const calculateTotalHours = (
 };
 
 export const calculateProgressPercent = (
-  totalHoursStr: string,
+  totalHoursInput: number | string,
   targetHours: number
-) => {
-  // Handle plain numbers like "8"
-  if (/^\d+$/.test(totalHoursStr)) {
-    totalHoursStr = `${totalHoursStr}h`;
-  }
+): number => {
+  const totalHours =
+    typeof totalHoursInput === "string"
+      ? parseFloat(totalHoursInput)
+      : totalHoursInput;
 
-  const match = totalHoursStr.match(/(\d+)h\s*(\d+)?m?/);
-  if (!match) return 0;
+  if (isNaN(totalHours) || targetHours <= 0) return 0;
 
-  const hours = parseInt(match[1], 10);
-  const minutes = match[2] ? parseInt(match[2], 10) : 0;
-
-  const totalHours = hours + minutes / 60;
   return Math.min((totalHours / targetHours) * 100, 100);
 };
+
 export const formatTime = (isoString: string | undefined | null): string => {
   if (!isoString) return "--:--";
 
@@ -69,4 +65,17 @@ export const formatTime = (isoString: string | undefined | null): string => {
     minute: "2-digit",
     hour12: true,
   });
+};
+export const formateDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+export const formatDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { day: "numeric", month: "short" });
 };
