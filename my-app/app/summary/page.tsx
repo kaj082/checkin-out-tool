@@ -1,33 +1,34 @@
 "use client";
+
 import { attendenceAction } from "@/src/actions";
 import AppSkeleton from "@/src/component/appskeleton/AppSkeleton";
-import Loader from "@/src/component/loader/Loader";
 import MonthlySummarySkeleton from "@/src/component/MonthlySkeleton";
 import { calculateProgressPercent } from "@/src/helpers/general.helper";
 import { withAuth } from "@/src/hoc/withAuthentication";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-const page = ({ month = "This Month" }) => {
-  const [totalHours, setTotalHours] = React.useState<string>("");
-  const [progress, setProgress] = React.useState<number>(0);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+interface PageProps {
+  month?: string;
+}
+
+const Page: React.FC<PageProps> = ({ month = "This Month" }) => {
+  const [totalHours, setTotalHours] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const monthData = async () => {
       setIsLoading(true);
       const res = await attendenceAction.fetchMonthlySummary();
       if (res.success) {
-        setTotalHours(res.data.totalHours);
+        const hours = Number(res.data.totalHours) || 0;
+        setTotalHours(hours);
+        setProgress(calculateProgressPercent(hours.toString(), 200));
       }
       setIsLoading(false);
     };
     monthData();
   }, []);
-
-  const progressPercent = calculateProgressPercent(totalHours, 200);
-  useEffect(() => {
-    setProgress(progressPercent);
-  }, [progressPercent]);
 
   return (
     <AppSkeleton>
@@ -62,4 +63,4 @@ const page = ({ month = "This Month" }) => {
   );
 };
 
-export default withAuth(page);
+export default withAuth(Page);
