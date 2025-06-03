@@ -91,12 +91,14 @@ const Home = () => {
     setIsCheckin(true);
     try {
       const res = await attendenceAction.userCheckIn();
+      console.log(res, "check");
       if (res.success) {
         setAttendance({
-          date: res.data.data.date,
-          checkInTime: res.data.data.checkInTime,
-          userId: res.data.data.userId,
+          date: res.data.date,
+          checkInTime: res.data.checkInTime,
+          userId: res.data.userId,
         });
+        setStatus("checked_in");
       }
     } finally {
       setIsCheckin(false);
@@ -109,10 +111,11 @@ const Home = () => {
       const res = await attendenceAction.userCheckOut();
       if (res.success) {
         setAttendance({
-          date: res.data.data.date,
-          checkOutTime: res.data.data.checkOutTime,
-          userId: res.data.data.userId,
+          date: res.data.date,
+          checkOutTime: res.data.checkOutTime,
+          userId: res.data.userId,
         });
+        setStatus("check_out");
       }
     } finally {
       setIsCheckout(false);
@@ -147,7 +150,7 @@ const Home = () => {
                   className="flex-1 py-2 rounded-lg bg-white/20 hover:bg-white/30 cursor-pointer"
                   onClick={handleCheckIn}
                 >
-                  {isCheckin ? <Spinner /> : "Check In"}
+                  {isCheckin ? <Spinner color="white" size={16} /> : "Check In"}
                 </button>
               )}
               {status === "checked_in" && (
@@ -155,7 +158,11 @@ const Home = () => {
                   className="flex-1 py-2 rounded-lg bg-white/20 hover:bg-white/30 cursor-pointer"
                   onClick={handleCheckOut}
                 >
-                  {isCheckout ? <Spinner /> : "Check Out"}
+                  {isCheckout ? (
+                    <Spinner color="white" size={16} />
+                  ) : (
+                    "Check Out"
+                  )}
                 </button>
               )}
             </div>
@@ -165,9 +172,9 @@ const Home = () => {
             <h3 className="text-xl font-semibold text-[#121212]">History</h3>
 
             <div className="bg-white rounded-xl relative shadow overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[300px]">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-[#6b3eb4] text-white sticky top-0">
+                  <thead className="bg-[#6b3eb4] text-white sticky top-0 z-10">
                     <tr>
                       {[
                         "Date",
@@ -185,11 +192,7 @@ const Home = () => {
                       ))}
                     </tr>
                   </thead>
-                </table>
-              </div>
 
-              <div className="overflow-y-auto max-h-[250px]">
-                <table className="min-w-full divide-y divide-gray-200">
                   <tbody className="divide-y divide-gray-100">
                     {HistoryData.length === 0 ? (
                       <tr>
@@ -234,7 +237,7 @@ const Home = () => {
               </div>
 
               {isLoading && (
-                <div className="absolute left-1/2 top-[50%]">
+                <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <Spinner color="#6b3eb4" size={32} />
                 </div>
               )}

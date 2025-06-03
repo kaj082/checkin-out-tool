@@ -13,14 +13,16 @@ const Spinner = ({
 }: SpinnerProps) => {
   return (
     <div
-      className={`animate-spin rounded-full border-${borderWidth} border-t-transparent`}
+      className="animate-spin rounded-full border-solid"
       style={{
         width: size,
         height: size,
-        borderTopColor: color,
+        borderWidth: borderWidth,
+        borderTopColor: "transparent",
         borderRightColor: color,
         borderBottomColor: color,
-        borderLeftColor: "transparent",
+        borderLeftColor: color,
+        borderStyle: "solid",
         margin: "auto",
       }}
     />
